@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Ignug;
+namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class AuthorityController extends Controller
 {

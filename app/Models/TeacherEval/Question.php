@@ -34,17 +34,13 @@ class Question extends Model implements Auditable
 
     public function type()
     {
-        return $this->belongsTo(Catalogue::class, 'type_id');
+        return $this->belongsTo(Catalogue::class);
     }
 
     public function answers()
     {
-        return $this->belongsToMany(Answer::class)->withPivot('id')->withTimestamps();
+        return $this->belongsToMany(Answer::class)->withTimestamps();
     }
 
-    public function status()
-    {
-        return $this->belongsTo(Catalogue::class, "status_id");
-    }
 
 }

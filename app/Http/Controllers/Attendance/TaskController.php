@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance\Attendance;
 use App\Models\Authentication\Role;
 use App\Models\Ignug\Catalogue;
-use App\Models\Ignug\Observation;
 use App\Models\Ignug\State;
 use App\Models\Attendance\Task;
 use App\Models\Ignug\Teacher;
@@ -23,7 +22,7 @@ class TaskController extends Controller
         $dataTask = $data['task'];
 
         $user = User::findOrFail($request->user_id);
-        $attendance = $user->attendances()->where('date', $currentDate)->where('institution_id', $request->institution_id)->first();
+        $attendance = $user->attendances()->firstWhere('date', $currentDate);
 
         if ($attendance) {
             $this->createOrUpdateTask($dataTask, $attendance);
@@ -37,17 +36,18 @@ class TaskController extends Controller
                 ]], 404);
         }
 
+
         return response()->json([
             'data' => $user->attendances()->with(['workdays' => function ($workdays) {
-                $workdays->with('type')->orderBy('start_time');
+                $workdays->with('type')->where('state_id', State::firstWhere('code', State::ACTIVE)->id)->orderBy('start_time');
             }])->with(['tasks' => function ($tasks) {
                 $tasks->with(['type' => function ($type) {
                     $type->with(['parent' => function ($parent) {
                         $parent->orderBy('name');
                     }]);
-                }]);
+                }])->where('state_id', State::firstWhere('code', State::ACTIVE)->id);
             }])
-                ->where('institution_id', $request->institution_id)
+                ->where('state_id', State::firstWhere('code', State::ACTIVE)->id)
                 ->where('date', Carbon::now())
                 ->first(),
             'msg' => [
@@ -74,7 +74,7 @@ class TaskController extends Controller
             ]], 201);
     }
 
-    private function createOrUpdateTask($datTask, $attendance)
+    public function createOrUpdateTask($datTask, $attendance)
     {
         $task = $attendance->tasks()->where('type_id', $datTask['type']['id'])->first();
 
@@ -105,17 +105,16 @@ class TaskController extends Controller
         $processes = $role->catalogues()->where('type', $catalogues['task']['process']['type'])->orderBy('name')->get();
         $attendances = $user->attendances()
             ->with(['workdays' => function ($workdays) {
-                $workdays
+                $workdays->where('state_id', State::firstWhere('code', State::ACTIVE)->id)
                     ->with('type');
             }])
             ->with(['tasks' => function ($tasks) {
-                $tasks
+                $tasks->where('state_id', State::firstWhere('code', State::ACTIVE)->id)
                     ->with(['type' => function ($type) {
                         $type->with('parent');
                     }]);
             }])
-            ->where('institution_id', $request->institution_id)
-
+            ->where('state_id', State::firstWhere('code', State::ACTIVE)->id)
             ->get();
 
         $data = array();
@@ -137,22 +136,6 @@ class TaskController extends Controller
 
         return response()->json([
             'data' => $reponse,
-            'msg' => [
-                'summary' => 'success',
-                'detail' => '',
-                'code' => '200',
-            ]], 200);
-    }
-
-    public function getProcess(Request $request)
-    {
-        $catalogues = json_decode(file_get_contents(storage_path() . "/catalogues.json"), true);
-        $role = Role::findOrFail($request->role_id);
-        $process = $role->catalogues()->with(['children' => function ($children) {
-            $children->orderBy('name');
-        }])->where('type', $catalogues['task']['process']['type'])->orderBy('name')->get();
-        return response()->json([
-            'data' => $process,
             'msg' => [
                 'summary' => 'success',
                 'detail' => '',

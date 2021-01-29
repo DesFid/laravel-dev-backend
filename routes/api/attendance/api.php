@@ -14,7 +14,6 @@ Route::group(['prefix' => 'tasks'], function () {
     Route::post('', [TaskController::class, 'store']);
     Route::delete('{id}', [TaskController::class, 'destroy']);
     Route::get('total_processes', [TaskController::class, 'getTotalProcesses']);
-    Route::get('processes', [TaskController::class, 'getProcess']);
 });
 
 Route::group(['prefix' => 'attendances'], function () {
@@ -32,24 +31,11 @@ Route::group(['prefix' => 'attendances'], function () {
     Route::post('start_day', [AttendanceController::class, 'startDay']);
     Route::put('end_day', [AttendanceController::class, 'endDay']);
     Route::put('day', [AttendanceController::class, 'updateDay']);
-    Route::post('register_tasks', [AttendanceController::class, 'registerTask']);
 });
-
 Route::apiResource('attendances', AttendanceController::class);
 
-Route::get('report', function () {
-    $data = [
-        'titulo' => 'Styde.net'
-    ];
-
-    $pdf = \PDF::loadView('reports.attendance.attendance', $data);
-
-    return $pdf->download('archivo.pdf');
-})->withoutMiddleware(['auth:api', 'check-attempts', 'check-status']);
-
-Route::group(['prefix' => 'reports'], function () {
-    Route::get('attendances', [AttendanceController::class, 'reportAttendances'])->withoutMiddleware(['auth:api', 'check-attempts', 'check-status']);;
-    Route::get('tasks', [AttendanceController::class, 'reportTasks'])->withoutMiddleware(['auth:api', 'check-attempts', 'check-status']);;
+Route::get('catalogues', function () {
+    $w = new \App\Models\Attendance\Workday();
+    return $w->catalogues;
+    return $catalogues['role'];
 });
-
-Route::get('birthdate', [AttendanceController::class, 'getBirthdate']);

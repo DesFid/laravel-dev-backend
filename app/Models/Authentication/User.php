@@ -2,16 +2,8 @@
 
 namespace App\Models\Authentication;
 
-use App\Models\Ignug\AdministrativeStaff;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
-use OwenIt\Auditing\Contracts\Auditable;
-use App\Traits\StatusActiveTrait;
-use App\Traits\StatusDeletedTrait;
-
 use App\Models\Attendance\Attendance;
+use App\Models\Cecy\Participant;
 use App\Models\Ignug\Authority;
 use App\Models\Ignug\Career;
 use App\Models\Ignug\Catalogue;
@@ -21,19 +13,22 @@ use App\Models\Ignug\State;
 use App\Models\Ignug\Teacher;
 use App\Models\JobBoard\Company;
 use App\Models\JobBoard\Professional;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
+use OwenIt\Auditing\Contracts\Auditable;
+
 
 class User extends Authenticatable implements Auditable
 {
     use HasApiTokens, Notifiable, HasFactory;
     use \OwenIt\Auditing\Auditable;
-    use StatusActiveTrait;
-    use StatusDeletedTrait;
 
     protected $connection = 'pgsql-authentication';
-    protected $table = 'authentication.users';
 
+    const TYPE_AVATARS = 'AVATARS';
     const ATTEMPTS = 3;
-
     protected $fillable = [
         'identification',
         'first_name',
@@ -58,6 +53,16 @@ class User extends Authenticatable implements Auditable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public static function rules()
+    {
+        return [
+            'email.unique' => 'The email has already been taken.',
+            'email.required' => 'The email field is required.',
+            'email.email' => 'The email must be a valid email address.',
+            'username.unique' => 'The username has already been taken.',
+        ];
+    }
 
     public function state()
     {
@@ -136,12 +141,12 @@ class User extends Authenticatable implements Auditable
 
     public function careers()
     {
-        return $this->morphToMany(Career::class, 'careerable' . 'ignug.careerables');
+        return $this->morphToMany(Career::class, 'careerable');
     }
 
     public function institutions()
     {
-        return $this->morphToMany(Institution::class, 'institutionable', 'ignug.institutionables');
+        return $this->morphToMany(Institution::class, 'institutionable');
     }
 
     public function attendances()
@@ -154,13 +159,13 @@ class User extends Authenticatable implements Auditable
         return $this->morphOne(Attendance::class, 'attendanceable');
     }
 
-    public function administrativeStaff()
-    {
-        return $this->hasOne(AdministrativeStaff::class);
-    }
-
     public function findForPassport($username)
     {
         return $this->where('username', $username)->first();
+    }
+
+    public function participant()
+    {
+        return $this->hasOne(Participant::class);
     }
 }

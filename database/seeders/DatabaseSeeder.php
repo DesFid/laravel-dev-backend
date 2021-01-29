@@ -143,6 +143,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AttendanceSeeder::class,
         ]);
+
     }
 
     private function createRoles()
@@ -634,23 +635,25 @@ class DatabaseSeeder extends Seeder
             'type' => $catalogues['career']['type']['type']
         ]);
     }
-}
-/*
-            drop schema if exists authentication cascade;
-            drop schema if exists attendance cascade;
-            drop schema if exists ignug cascade;
-            drop schema if exists job_board cascade;
-            drop schema if exists web cascade;
-            drop schema if exists teacher_eval cascade;
-            drop schema if exists community cascade;
-            drop schema if exists cecy cascade;
 
-            create schema authentication;
-            create schema attendance;
-            create schema ignug;
-            create schema job_board;
-            create schema web;
-            create schema teacher_eval;
-            create schema community;
-            create schema cecy;
+}
+
+/*
+drop schema if exists authentication cascade;
+drop schema if exists attendance cascade;
+drop schema if exists ignug cascade;
+drop schema if exists job_board cascade;
+drop schema if exists web cascade;
+drop schema if exists teacher_eval cascade;
+drop schema if exists community cascade;
+drop schema if exists cecy cascade;
+
+create schema authentication;
+create schema attendance;
+create schema ignug;
+create schema job_board;
+create schema web;
+create schema teacher_eval;
+create schema community;
+create schema cecy;
  */

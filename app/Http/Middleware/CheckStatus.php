@@ -24,9 +24,9 @@ class CheckStatus
                 'msg' => [
                     'summary' => 'Tu usuario se encuentra Eliminado!',
                     'detail' => 'Comunicate con el administrador',
-                    'code' => '4040'
+                    'code' => '4030'
                 ]
-            ], 403);
+            ], 404);
         }
         if ($request->user()->status_id === Status::where('code', Status::INACTIVE)->first()->id) {
             return response()->json([
@@ -44,7 +44,7 @@ class CheckStatus
                 'data' => null,
                 'msg' => [
                     'summary' => 'Tu usuario se encuentra Bloqueado',
-                    'detail' => 'Haz click en Desbloquear Usuario',
+                    'detail' => 'Comunicate con el administrador',
                     'code' => '423'
                 ]
             ], 423);

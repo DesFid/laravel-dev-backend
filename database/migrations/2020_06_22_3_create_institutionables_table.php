@@ -14,7 +14,6 @@ class CreateInstitutionablesTable extends Migration
             $table->foreignId('institution_id');
             $table->morphs('institutionable');
             $table->timestamps();
-            $table->unique(['institution_id','institutionable_id','institutionable_type']);
         });
     }
 

@@ -168,7 +168,7 @@ class  AuthController extends Controller
             'token' => $token
         ]);
 
-        Mail::send('mails.forgot', ['token' => $token, 'user' => $user], function (Message $message) use ($user) {
+        Mail::send('Mails.forgot', ['token' => $token, 'user' => $user], function (Message $message) use ($user) {
             $message->to($user->email);
             $message->subject('Notificación de restablecimiento de contraseña');
         });
@@ -204,13 +204,9 @@ class  AuthController extends Controller
             'token' => $token
         ]);
 
-//        $data = ['token' => $token, 'user' => $user];
-//        $pdf = \PDF::loadView('mails.unlock', $data);
-
-        Mail::send('mails.unlock', ['token' => $token, 'user' => $user], function (Message $message) use ($user) {
+        Mail::send('Mails.unlock', ['token' => $token, 'user' => $user], function (Message $message) use ($user) {
             $message->to($user->email);
             $message->subject('Notificación de desbloqueo de usuario');
-//             $message->attachData($pdf->output(), 'test.pdf');
         });
         $domainEmail = strlen($user->email) - strpos($user->email, "@");
 
@@ -244,8 +240,7 @@ class  AuthController extends Controller
             'token' => $token
         ]);
 
-
-        Mail::send('mails.transactional-code', ['token' => $token, 'user' => $user], function (Message $message) use ($user) {
+        Mail::send('Mails.transactional-code', ['token' => $token, 'user' => $user], function (Message $message) use ($user) {
             $message->to($user->email);
             $message->subject('Información Código de Seguridad');
         });
@@ -303,7 +298,6 @@ class  AuthController extends Controller
         }
 
         $user->password = Hash::make($request->password);
-        $user->attempts = User::ATTEMPTS;
         $user->save();
         $passworReset->update(['is_valid' => false]);
         return response()->json([

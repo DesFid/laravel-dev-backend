@@ -2,10 +2,7 @@
 
 namespace App\Models\Attendance;
 
-use App\Models\Ignug\Institution;
-use App\Models\Ignug\Observation;
-use App\Traits\StatusActiveTrait;
-use App\Traits\StatusDeletedTrait;
+use App\Models\Authentication\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Ignug\Teacher;
 use Illuminate\Database\Eloquent\Model;
@@ -18,8 +15,6 @@ class Attendance extends Model implements Auditable
 
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
-    use StatusActiveTrait;
-    use StatusDeletedTrait;
 
     protected $connection = 'pgsql-attendance';
 
@@ -51,6 +46,11 @@ class Attendance extends Model implements Auditable
         return $this->belongsTo(Catalogue::class);
     }
 
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class, 'attendanceable_id')->with('user');
+    }
+
     public function state()
     {
         return $this->belongsTo(State::class);
@@ -64,16 +64,6 @@ class Attendance extends Model implements Auditable
     public function tasks()
     {
         return $this->hasMany(Task::class);
-    }
-
-    public function institution()
-    {
-        return $this->belongsTo(Institution::class);
-    }
-
-    public function observations()
-    {
-        return $this->morphMany(Observation::class, 'observationable');
     }
 
 }

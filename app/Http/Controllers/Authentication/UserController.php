@@ -21,7 +21,8 @@ class  UserController extends Controller
     public function index(Request $request)
     {
         if ($request->has('conditions') && $request->conditions && $request->conditions != 'undefined') {
-            $users = User::where(function ($query) use ($request) {
+            $users = User::where('state_id', State::firstWhere('code', State::ACTIVE)->id)
+                ->where(function ($query) use ($request) {
                     $query->orWhere($this->filter($request->conditions));
                 })
                 ->with('ethnicOrigin')
@@ -32,13 +33,8 @@ class  UserController extends Controller
                 ->with('roles')
                 ->paginate($request->per_page);
         } else {
-            $users = User::with('ethnicOrigin')
-                ->with('location')
-                ->with('identificationType')
-                ->with('sex')
-                ->with('gender')
-                ->with('roles')
-                ->paginate($request->per_page);
+            $users = User::select('*')
+                ;
         }
         return response()->json([
             'data' => $users,

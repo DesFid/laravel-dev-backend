@@ -10,7 +10,6 @@ use App\Models\Ignug\SubjectTeacher;
 use App\Models\Ignug\Student;
 
 
-
 class StudentResult extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
@@ -38,14 +37,5 @@ class StudentResult extends Model implements Auditable
         return $this->belongsTo(AnswerQuestion::class);
     }
 
-    public function evaluationType()
-    {
-        return $this->belongsTo(EvaluationType::class);
-    }
-
-    public function schoolPeriod()
-    {
-        return $this->belongsTo(SchoolPeriod::class);
-    }
 
 }
